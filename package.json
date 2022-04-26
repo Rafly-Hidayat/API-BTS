@@ -1,0 +1,27 @@
+{
+  "name": "api-bts",
+  "version": "1.0.0",
+  "description": "API for API for web BTS SMKN 2 Bekasi City",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rafly-Hidayat/API-BTS.git"
+  },
+  "author": "RPL 3",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Rafly-Hidayat/API-BTS/issues"
+  },
+  "homepage": "https://github.com/Rafly-Hidayat/API-BTS#readme",
+  "dependencies": {
+    "convert-excel-to-json": "^1.7.0",
+    "cors": "^2.8.5",
+    "dotenv": "^16.0.0",
+    "express": "^4.18.0",
+    "mysql": "^2.18.1",
+    "nodemon": "^2.0.15"
+  }
+}
