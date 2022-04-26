@@ -1,8 +1,6 @@
 // connect to database
 const mysql = require('mysql')
-const env = require('dotenv')
-
-env.config() // load .env file
+require('dotenv').config() // config dotenv for enviroment variable
 
 // create connection
 const con = mysql.createConnection({
