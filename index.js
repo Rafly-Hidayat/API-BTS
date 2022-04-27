@@ -2,6 +2,7 @@
 const express = require("express");
 const cors = require("cors");
 const path = require("path");
+const upload = require("express-fileupload");
 
 // Import file
 const con = require("./src/config/db"); // Database
@@ -14,6 +15,9 @@ app.use("/public", express.static(path.join(__dirname, "/public"))); // Static f
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
 app.use(cors()); // use cors for cross origin
+app.use(upload({
+    createParentPath: true
+})); // use express-fileupload for upload file
 
 // connecting route to database
 app.use(function (req, res, next) {

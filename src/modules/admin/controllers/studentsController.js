@@ -68,7 +68,7 @@ module.exports = {
 
     // create students
     create: (req, res) => {
-        Students.create(req.con, req.body, res, (err) => {
+        Students.create(req.con, req.body, res, req.files, (err) => {
             if (err) {
                 res.status(500).json({
                     message: 'Error create student',
@@ -85,7 +85,7 @@ module.exports = {
 
     // update student by id
     update: (req, res) => {
-        Students.update(req.con, req.body, res, req.params.siswa_id, (err) => {
+        Students.update(req.con, req.body, res, req.params.siswa_id, req.files, (err) => {
             if (err) {
                 res.status(500).json({
                     message: 'Error update students',

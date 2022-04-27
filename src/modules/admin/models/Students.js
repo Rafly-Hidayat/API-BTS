@@ -15,7 +15,7 @@ module.exports = {
     },
 
     // create students
-    create: (con, data, res, callback) => {
+    create: (con, data, res, image, callback) => {
         // check if data is already exist in database
         con.query(`SELECT * FROM siswa WHERE siswa_nis = '${data.nis}'`, (err, result) => {
             if (err) {
@@ -24,20 +24,39 @@ module.exports = {
                     error: err
                 });
             } else if (result.length === 0) {
-                // insert data to database
-                con.query(`INSERT INTO siswa SET siswa_nis = '${data.nis}', siswa_nama = '${data.nama}', siswa_gambar = '${data.gambar}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id}`, callback)
+                // check if image is empty
+                if (!image) {
+                    res.status(500).json({
+                        message: 'Image cannot be empty',
+                        error: true
+                    });
+                } else {
+                    // move image to public/images/ with name image using file.mv()
+                    let file = image['image'];
+                    let filename = file.name;
+                    file.mv(`public/images/` + filename, (err) => {
+                        if (err) {
+                            res.status(500).json({
+                                message: 'Error move image',
+                                error: err
+                            });
+                        } else {
+                            // insert data to database
+                            con.query(`INSERT INTO siswa SET siswa_nis = '${data.nis}', siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id}`, callback)
+                        }
+                    })
+                }
             } else {
                 res.status(500).json({
                     message: 'Student NIS already exist',
                     error: true
                 });
             }
-        }
-        )
+        });
     },
 
     // update student by id
-    update: (con, data, res, id, callback) => {
+    update: (con, data, res, id, image, callback) => {
         // check if there is data in database
         con.query(`SELECT * FROM siswa WHERE siswa_id = ${id}`, (err, result) => {
             if (err) {
@@ -51,10 +70,30 @@ module.exports = {
                     error: true
                 });
             } else {
-                // update data to database
-                con.query(`UPDATE siswa SET siswa_nama = '${data.nama}', siswa_gambar = '${data.gambar}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id} WHERE siswa_id = ${id}`, callback)
+                // check if image is empty
+                if (!image) {
+                    res.status(500).json({
+                        message: 'Image cannot be empty',
+                        error: true
+                    });
+                } else {
+                    // move image to public/images/ with name image using file.mv()
+                    let file = image['image'];
+                    let filename = file.name;
+                    file.mv(`public/images/` + filename, (err) => {
+                        if (err) {
+                            res.status(500).json({
+                                message: 'Error move image',
+                                error: err
+                            });
+                        } else {
+                            // update data to database
+                            con.query(`UPDATE siswa SET siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id} WHERE siswa_id = ${id}`, callback)
+                        }
+                    })
+                }
             }
-        })
+        });
     },
 
     // delete student by id
