@@ -36,6 +36,24 @@ module.exports = {
                 });
             }
         })
+    },
+
+    // get image by kelas id
+    getImageByKelasId: (req, res) => {
+        Class.getImageByKelasId(req.con, req.params.kelas_id, (err, result) => {
+            if (err) {
+                res.status(500).json({
+                    message: 'Error get image by kelas id',
+                    error: err
+                    });
+            } else {
+                res.status(200).json({
+                    message: 'Success get image by kelas id',
+                    error: false,
+                    data: result
+                });
+            }
+        })
     }
-    
+
 }
