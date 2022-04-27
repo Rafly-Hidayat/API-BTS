@@ -25,11 +25,13 @@ app.use(function (req, res, next) {
     next();
 });
 // import admin router
-const adminAuth = require("./src/modules/admin/routes/authRouter"); // Router Login Admin
-const students = require("./src/modules/admin/routes/studentsRouter"); // Router Students
+const adminAuthRouter = require("./src/modules/admin/routes/authRouter"); // Router Login Admin
+const studentsRouter = require("./src/modules/admin/routes/studentsRouter"); // Router Students
+const classRouter = require("./src/modules/admin/routes/classRouter"); // Router Class
 
 // use admin router
-app.use(adminAuth); // use router login admin
-app.use(students); // use router students
+app.use(adminAuthRouter); // use router login admin
+app.use(studentsRouter); // use router students
+app.use(classRouter); // use router class
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
