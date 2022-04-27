@@ -31,20 +31,30 @@ module.exports = {
                         error: true
                     });
                 } else {
-                    // move image to public/images/ with name image using file.mv()
-                    let file = image['image'];
-                    let filename = file.name;
-                    file.mv(`public/images/` + filename, (err) => {
-                        if (err) {
-                            res.status(500).json({
-                                message: 'Error move image',
-                                error: err
-                            });
-                        } else {
-                            // insert data to database
-                            con.query(`INSERT INTO siswa SET siswa_nis = '${data.nis}', siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id}`, callback)
-                        }
-                    })
+                    // check extension image
+                    const extension = image['image'].mimetype.split('/')[1];
+                    const allowedExtension = ['jpg', 'jpeg', 'png',];
+                    if (allowedExtension.indexOf(extension) === -1) {
+                        res.status(500).json({
+                            message: 'Extension image not allowed',
+                            error: true
+                        });
+                    } else {
+                        // move image to public/images/ with name image using file.mv()
+                        let file = image['image'];
+                        let filename = file.name;
+                        file.mv(`public/images/` + filename, (err) => {
+                            if (err) {
+                                res.status(500).json({
+                                    message: 'Error move image',
+                                    error: err
+                                });
+                            } else {
+                                // insert data to database
+                                con.query(`INSERT INTO siswa SET siswa_nis = '${data.nis}', siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id}`, callback)
+                            }
+                        })
+                    }
                 }
             } else {
                 res.status(500).json({
@@ -77,20 +87,31 @@ module.exports = {
                         error: true
                     });
                 } else {
-                    // move image to public/images/ with name image using file.mv()
-                    let file = image['image'];
-                    let filename = file.name;
-                    file.mv(`public/images/` + filename, (err) => {
-                        if (err) {
-                            res.status(500).json({
-                                message: 'Error move image',
-                                error: err
-                            });
-                        } else {
-                            // update data to database
-                            con.query(`UPDATE siswa SET siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id} WHERE siswa_id = ${id}`, callback)
-                        }
-                    })
+                    // check extension image
+                    const extension = image['image'].mimetype.split('/')[1];
+                    const allowedExtension = ['jpg', 'jpeg', 'png',];
+                    if (allowedExtension.indexOf(extension) === -1) {
+                        res.status(500).json({
+                            message: 'Extension image not allowed',
+                            error: true
+                        });
+                    } else {
+
+                        // move image to public/images/ with name image using file.mv()
+                        let file = image['image'];
+                        let filename = file.name;
+                        file.mv(`public/images/` + filename, (err) => {
+                            if (err) {
+                                res.status(500).json({
+                                    message: 'Error move image',
+                                    error: err
+                                });
+                            } else {
+                                // update data to database
+                                con.query(`UPDATE siswa SET siswa_nama = '${data.nama}', siswa_gambar = '${filename}', siswa_quote = '${data.quote}', kelas_id = ${data.kelas_id} WHERE siswa_id = ${id}`, callback)
+                            }
+                        })
+                    }
                 }
             }
         });
