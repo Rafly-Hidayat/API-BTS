@@ -7,12 +7,12 @@ module.exports = {
         Students.getAll(req.con, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error get all students',
+                    message: 'Failed to get all students',
                     error: err
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success get all students',
+                    message: 'Success to get all students',
                     error: false,
                     data: result
                 });
@@ -25,7 +25,7 @@ module.exports = {
         Students.getById(req.con, req.params.siswa_id, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error get student',
+                    message: 'Failed to get student',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -35,7 +35,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success get student by jurusan',
+                    message: 'Success to get student by jurusan',
                     error: false,
                     data: result
                 });
@@ -48,7 +48,7 @@ module.exports = {
         Students.getByKelasId(req.con, req.params.kelas_id, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error get student',
+                    message: 'Failed to get student',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -58,7 +58,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success get student by jurusan',
+                    message: 'Success to get student by jurusan',
                     error: false,
                     data: result
                 });
@@ -71,7 +71,7 @@ module.exports = {
         Students.create(req.con, req.body, res, req.files, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error create student',
+                    message: 'Failed to create student',
                     error: err
                 });
             } else {
@@ -88,7 +88,7 @@ module.exports = {
         Students.update(req.con, req.body, res, req.params.siswa_id, req.files, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error update students',
+                    message: 'Failed to update students',
                     error: err
                 });
             } else {
@@ -105,7 +105,7 @@ module.exports = {
         Students.delete(req.con, req.params.siswa_id, res, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error delete student',
+                    message: 'Failed to delete student',
                     error: err
                 });
             } else {

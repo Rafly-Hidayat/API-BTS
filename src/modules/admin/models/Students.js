@@ -20,7 +20,7 @@ module.exports = {
         con.query(`SELECT * FROM siswa WHERE siswa_nis = '${data.nis}'`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error create student',
+                    message: 'Failed to create student',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -46,7 +46,7 @@ module.exports = {
                         file.mv(`public/images/` + filename, (err) => {
                             if (err) {
                                 res.status(500).json({
-                                    message: 'Error move image',
+                                    message: 'Failed to move image',
                                     error: err
                                 });
                             } else {
@@ -71,7 +71,7 @@ module.exports = {
         con.query(`SELECT * FROM siswa WHERE siswa_id = ${id}`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error update student',
+                    message: 'Failed to update student',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -103,7 +103,7 @@ module.exports = {
                         file.mv(`public/images/` + filename, (err) => {
                             if (err) {
                                 res.status(500).json({
-                                    message: 'Error move image',
+                                    message: 'Failed to move image',
                                     error: err
                                 });
                             } else {
@@ -123,7 +123,7 @@ module.exports = {
         con.query(`SELECT * FROM siswa WHERE siswa_id = ${id}`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error delete student',
+                    message: 'Failed to delete student',
                     error: err
                 });
             } else if (result.length === 0) {

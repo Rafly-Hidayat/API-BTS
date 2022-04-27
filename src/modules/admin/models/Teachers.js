@@ -15,7 +15,7 @@ module.exports = {
         con.query(`SELECT * FROM guru WHERE guru_nama = '${data.nama}'`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error create teacher',
+                    message: 'Failed to create teacher',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -41,7 +41,7 @@ module.exports = {
                         file.mv(`public/images/` + filename, (err) => {
                             if (err) {
                                 res.status(500).json({
-                                    message: 'Error move image',
+                                    message: 'Failed to move image',
                                     error: err
                                 });
                             } else {
@@ -66,7 +66,7 @@ module.exports = {
         con.query(`SELECT * FROM guru WHERE guru_id = ${id}`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error update teacher',
+                    message: 'Failed to update teacher',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -117,7 +117,7 @@ module.exports = {
         con.query(`SELECT * FROM guru WHERE guru_id = ${id}`, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error delete teacher',
+                    message: 'Failed to delete teacher',
                     error: err
                 });
             } else if (result.length === 0) {

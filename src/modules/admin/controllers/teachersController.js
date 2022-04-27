@@ -6,12 +6,12 @@ module.exports = {
         Teachers.getAll(req.con, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error get all teachers',
+                    message: 'Failed to get all teachers',
                     error: err
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success get all teachers',
+                    message: 'Success to get all teachers',
                     error: false,
                     data: result
                 });
@@ -24,7 +24,7 @@ module.exports = {
         Teachers.getById(req.con, req.params.guru_id, (err, result) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error get teacher by id',
+                    message: 'Failed to get teacher by id',
                     error: err
                 });
             } else if (result.length === 0) {
@@ -34,7 +34,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success get teacher by id',
+                    message: 'Success to get teacher by id',
                     error: false,
                     data: result
                 });
@@ -47,7 +47,7 @@ module.exports = {
         Teachers.create(req.con, req.body, req.files, res, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error create teacher',
+                    message: 'Failed to create teacher',
                     error: err
                 });
             } else {
@@ -64,7 +64,7 @@ module.exports = {
         Teachers.update(req.con, req.body, res, req.params.guru_id, req.files, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error update teacher',
+                    message: 'Failed to update teacher',
                     error: err
                 });
             } else {
@@ -81,7 +81,7 @@ module.exports = {
         Teachers.delete(req.con, req.params.guru_id, res, (err) => {
             if (err) {
                 res.status(500).json({
-                    message: 'Error delete teacher',
+                    message: 'Failed to delete teacher',
                     error: err
                 });
             } else {
