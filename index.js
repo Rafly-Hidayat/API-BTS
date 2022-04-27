@@ -22,8 +22,10 @@ app.use(function (req, res, next) {
 });
 // import admin router
 const adminAuth = require("./src/modules/admin/routes/authRouter"); // Router Login Admin
+const students = require("./src/modules/admin/routes/studentsRouter"); // Router Students
 
 // use admin router
 app.use(adminAuth); // use router login admin
+app.use(students); // use router students
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
