@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: localhost
--- Generation Time: Apr 27, 2022 at 11:36 AM
+-- Generation Time: Apr 27, 2022 at 12:27 PM
 -- Server version: 10.4.21-MariaDB
 -- PHP Version: 8.0.15
 
@@ -72,9 +72,16 @@ CREATE TABLE `gambar` (
   `gambar_id` int(11) NOT NULL,
   `gambar_nama` varchar(100) NOT NULL,
   `gambar_jenis` enum('wajib','bebas') NOT NULL,
-  `jurusan_id` int(4) NOT NULL,
-  `d_kelas_id` int(4) NOT NULL
+  `kelas_id` int(11) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+--
+-- Dumping data for table `gambar`
+--
+
+INSERT INTO `gambar` (`gambar_id`, `gambar_nama`, `gambar_jenis`, `kelas_id`) VALUES
+(1, 'profile.png', 'wajib', 6),
+(2, 'avatar1.png', 'bebas', 6);
 
 -- --------------------------------------------------------
 
@@ -197,8 +204,7 @@ ALTER TABLE `d_kelas`
 --
 ALTER TABLE `gambar`
   ADD PRIMARY KEY (`gambar_id`),
-  ADD KEY `jurusan_id` (`jurusan_id`),
-  ADD KEY `d_kelas_id` (`d_kelas_id`);
+  ADD KEY `kelas_id` (`kelas_id`);
 
 --
 -- Indexes for table `guru`
@@ -248,7 +254,7 @@ ALTER TABLE `d_kelas`
 -- AUTO_INCREMENT for table `gambar`
 --
 ALTER TABLE `gambar`
-  MODIFY `gambar_id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `gambar_id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
 
 --
 -- AUTO_INCREMENT for table `guru`
@@ -282,8 +288,7 @@ ALTER TABLE `siswa`
 -- Constraints for table `gambar`
 --
 ALTER TABLE `gambar`
-  ADD CONSTRAINT `gambar_ibfk_1` FOREIGN KEY (`jurusan_id`) REFERENCES `jurusan` (`jurusan_id`) ON DELETE CASCADE ON UPDATE CASCADE,
-  ADD CONSTRAINT `gambar_ibfk_2` FOREIGN KEY (`d_kelas_id`) REFERENCES `d_kelas` (`d_kelas_id`);
+  ADD CONSTRAINT `gambar_ibfk_1` FOREIGN KEY (`kelas_id`) REFERENCES `kelas` (`kelas_id`) ON DELETE CASCADE ON UPDATE CASCADE;
 
 --
 -- Constraints for table `kelas`
