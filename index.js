@@ -28,10 +28,12 @@ app.use(function (req, res, next) {
 const adminAuthRouter = require("./src/modules/admin/routes/authRouter"); // Router Login Admin
 const studentsRouter = require("./src/modules/admin/routes/studentsRouter"); // Router Students
 const classRouter = require("./src/modules/admin/routes/classRouter"); // Router Class
+const teachersRouter = require("./src/modules/admin/routes/teachersRouter"); // Router Teachers
 
 // use admin router
 app.use(adminAuthRouter); // use router login admin
 app.use(studentsRouter); // use router students
 app.use(classRouter); // use router class
+app.use(teachersRouter); // use router teachers
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
