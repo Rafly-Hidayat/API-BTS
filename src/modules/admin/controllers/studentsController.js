@@ -35,7 +35,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success to get student by jurusan',
+                    message: 'Success to get student by id',
                     error: false,
                     data: result
                 });
@@ -58,7 +58,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success to get student by jurusan',
+                    message: 'Success to get student by class',
                     error: false,
                     data: result
                 });
