@@ -31,11 +31,17 @@ const classRouter = require("./src/modules/admin/routes/classRouter"); // Router
 const teachersRouter = require("./src/modules/admin/routes/teachersRouter"); // Router Teachers
 const majorsRouter = require("./src/modules/admin/routes/majorRouter"); // Router Majors
 
+// import user router
+const studentsUserRouter = require("./src/modules/user/routes/studentsRouter"); // Router Students
+
 // use admin router
 app.use(adminAuthRouter); // use router login admin
 app.use(studentsRouter); // use router students
 app.use(classRouter); // use router class
 app.use(teachersRouter); // use router teachers
 app.use(majorsRouter); // use router majors
+
+// use user router
+app.use("/user", studentsUserRouter); // use router students
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
