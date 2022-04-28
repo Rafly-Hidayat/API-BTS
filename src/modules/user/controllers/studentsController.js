@@ -57,7 +57,7 @@ module.exports = {
                 });
             } else {
                 res.status(200).json({
-                    message: 'Success to get students by kelas',
+                    message: 'Success to get students by class',
                     error: false,
                     data: result
                 });
