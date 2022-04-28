@@ -26,22 +26,26 @@ app.use(function (req, res, next) {
 });
 // import admin router
 const adminAuthRouter = require("./src/modules/admin/routes/authRouter"); // Router Login Admin
-const studentsRouter = require("./src/modules/admin/routes/studentsRouter"); // Router Students
-const classRouter = require("./src/modules/admin/routes/classRouter"); // Router Class
-const teachersRouter = require("./src/modules/admin/routes/teachersRouter"); // Router Teachers
-const majorsRouter = require("./src/modules/admin/routes/majorRouter"); // Router Majors
+const studentsRouter = require("./src/modules/admin/routes/studentsRouter"); // Router Students Admin
+const classRouter = require("./src/modules/admin/routes/classRouter"); // Router Class Admin
+const teachersRouter = require("./src/modules/admin/routes/teachersRouter"); // Router Teachers Admin
+const majorsRouter = require("./src/modules/admin/routes/majorRouter"); // Router Majors Admin
 
 // import user router
-const studentsUserRouter = require("./src/modules/user/routes/studentsRouter"); // Router Students
+const studentsUserRouter = require("./src/modules/user/routes/studentsRouter"); // Router Students User
+const classUserRouter = require("./src/modules/user/routes/classRouter"); // Router Class User
+const majorsUserRouter = require("./src/modules/user/routes/majorRouter"); // Router Majors User
 
 // use admin router
 app.use(adminAuthRouter); // use router login admin
-app.use(studentsRouter); // use router students
-app.use(classRouter); // use router class
-app.use(teachersRouter); // use router teachers
-app.use(majorsRouter); // use router majors
+app.use(studentsRouter); // use router students admin
+app.use(classRouter); // use router class admin
+app.use(teachersRouter); // use router teachers admin
+app.use(majorsRouter); // use router majors admin
 
 // use user router
-app.use("/user", studentsUserRouter); // use router students
+app.use("/user", studentsUserRouter); // use router students user
+app.use("/user", classUserRouter); // use router class user
+app.use("/user", majorsUserRouter); // use router majors user
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
