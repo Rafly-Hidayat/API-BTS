@@ -142,14 +142,14 @@ module.exports = {
       let file = data;
       let filename = file.name;
 
-      file.mv("./public/excel/" + filename, (err) => {
+      file.mv("./public/excel/single/" + filename, (err) => {
         if (err)
           return res.status(500).json({
             message: "Error Uploading Excel File.",
             error: err,
           });
         let result = importExcel({
-          sourceFile: "./public/excel/" + filename,
+          sourceFile: "./public/excel/single/" + filename,
           header: { rows: 1 },
           columnToKey: {
             A: "nis",
@@ -222,7 +222,7 @@ module.exports = {
                       d_kelas.push(rows[0].d_kelas_nama);
                       console.log(rows);
                       kelas.push(jurusan[i] + " ".concat(d_kelas[i]));
-                     
+
                       console.log("kelas :", kelas);
                     } else {
                       // ABORT
@@ -254,8 +254,9 @@ module.exports = {
               return res
                 .status(500)
                 .json({ message: "d_kelas not found", error: true });
+            } else {
+              return callback(filename, jurusan, d_kelas, kelas);
             }
-            return callback(filename, jurusan, d_kelas, kelas);
           });
         });
       });
@@ -268,7 +269,7 @@ module.exports = {
         return res.status(500).json({ message: "Upload error", error: err });
       let error = 0;
       let result = importExcel({
-        sourceFile: "./public/excel/" + filename,
+        sourceFile: "./public/excel/single/" + filename,
         header: { rows: 1 },
         columnToKey: {
           A: "nis",
@@ -288,20 +289,25 @@ module.exports = {
         if (quote.length <= 100) {
           console.log("quotes allowed");
           // get kelas_id
-          con.query(`SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas[i]}'`, (err, rows) => {
-              if(err) throw err
-              if(rows.length > 0) {
-                  let kelasId = rows[0].kelas_id
-                  // insert into database
-                    con.query(`INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId}`, (err, rows) => {
-                        if(err) throw err
-                    })
-
+          con.query(
+            `SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas[i]}'`,
+            (err, rows) => {
+              if (err) throw err;
+              if (rows.length > 0) {
+                let kelasId = rows[0].kelas_id;
+                // insert into database
+                con.query(
+                  `INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId}`,
+                  (err, rows) => {
+                    if (err) throw err;
+                  }
+                );
               } else {
-                con.rollback()
+                con.rollback();
                 error = 2;
               }
-          })
+            }
+          );
         } else {
           //   ABORT
           con.rollback();
@@ -313,17 +319,16 @@ module.exports = {
         if (err) con.rollback();
         if (error == 0) {
           return res.status(200).json({ message: "Uploaded !", error: false });
-        } else if(error == 1){
+        } else if (error == 1) {
           return res.status(500).json({
             message: "Quote's length exceed the maximum value.",
             error: true,
           });
-        } else if (error = 2) {
-            return res.status(404).json({
-              message: "Kelas not found",
-              error: true,
-            });
-
+        } else if ((error = 2)) {
+          return res.status(404).json({
+            message: "Kelas not found",
+            error: true,
+          });
         }
       });
     });
