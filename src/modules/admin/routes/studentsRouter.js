@@ -10,5 +10,5 @@ router.get('/siswa/kelas/:kelas_id', studentsController.getByKelasId) // get stu
 router.post('/siswa/tambah', studentValidator.create, studentsController.create) // create student
 router.put('/siswa/ubah/:siswa_id', studentValidator.update, studentsController.update) // update student by id
 router.delete('/siswa/hapus/:siswa_id', studentsController.delete) // delete student by id
-
+router.post('/siswa/upload', studentsController.upload) // upload image')
 module.exports = router

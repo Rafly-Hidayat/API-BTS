@@ -44,6 +44,7 @@ const studentsRouter = require("./src/modules/admin/routes/studentsRouter"); // 
 const classRouter = require("./src/modules/admin/routes/classRouter"); // Router Class Admin
 const teachersRouter = require("./src/modules/admin/routes/teachersRouter"); // Router Teachers Admin
 const majorsRouter = require("./src/modules/admin/routes/majorRouter"); // Router Majors Admin
+const photoRouter = require("./src/modules/admin/routes/photoRouter") // Router Photos Admin
 
 // import user router
 const studentsUserRouter = require("./src/modules/user/routes/studentsRouter"); // Router Students User
@@ -56,6 +57,7 @@ app.use(studentsRouter); // use router students admin
 app.use(classRouter); // use router class admin
 app.use(teachersRouter); // use router teachers admin
 app.use(majorsRouter); // use router majors admin
+app.use(photoRouter); // use router Photos admin
 
 // use user router
 app.use("/user", studentsUserRouter); // use router students user
