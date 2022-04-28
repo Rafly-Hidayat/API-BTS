@@ -14,7 +14,12 @@ const port = 8000; // port localhost
 app.use("/public", express.static(path.join(__dirname, "/public"))); // Static folder for file public
 app.use(express.json()); // for parsing application/json
 app.use(express.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
-app.use(cors()); // use cors for cross origin
+app.use(cors({
+    origin: "*",
+    methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+    preflightContinue: false,
+    optionsSuccessStatus: 204
+})); // use cors for cross origin
 app.use(upload({
     createParentPath: true
 })); // use express-fileupload for upload file
@@ -37,15 +42,15 @@ const classUserRouter = require("./src/modules/user/routes/classRouter"); // Rou
 const majorsUserRouter = require("./src/modules/user/routes/majorRouter"); // Router Majors User
 
 // use admin router
-app.use(adminAuthRouter); // use router login admin
-app.use(studentsRouter); // use router students admin
-app.use(classRouter); // use router class admin
-app.use(teachersRouter); // use router teachers admin
-app.use(majorsRouter); // use router majors admin
+app.use(cors(), adminAuthRouter); // use router login admin
+app.use(cors(), studentsRouter); // use router students admin
+app.use(cors(), classRouter); // use router class admin
+app.use(cors(), teachersRouter); // use router teachers admin
+app.use(cors(), majorsRouter); // use router majors admin
 
 // use user router
-app.use("/user", studentsUserRouter); // use router students user
-app.use("/user", classUserRouter); // use router class user
-app.use("/user", majorsUserRouter); // use router majors user
+app.use("/user", cors(),  studentsUserRouter); // use router students user
+app.use("/user", cors(),  classUserRouter); // use router class user
+app.use("/user", cors(),  majorsUserRouter); // use router majors user
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port
