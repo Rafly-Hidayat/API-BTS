@@ -341,22 +341,24 @@ module.exports = {
     });
 
     let isValid = []
+    let kelasId = []
     function isError(kelas){
       return new Promise((resolve) => {
           console.log(kelas);
           con.query(`SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas}'`, (err, rows) => {
             if (err) throw err
             if(rows.length > 0) {
+              kelasId.push(rows[0].kelas_id)
               isValid.push(true)
             } else {
               isValid.push(false)
             }
-            resolve( isValid )
+            resolve( isValid , kelasId)
           })
       })
     }
 
-    function checkError(isValid) {
+    function checkError() {
       if (isValid.includes(false) == true) {
         con.rollback();
         return res.status(500).json({
@@ -365,6 +367,11 @@ module.exports = {
         });
       } else {
         console.log('insert to database');
+        for(let i = 0; i < result.Sheet1.length; i ++) {
+          con.query(`INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId[i]}`, (err) => {
+            if(err) throw err
+          })
+        }
       }
     }
 
@@ -373,7 +380,11 @@ module.exports = {
         await isError(kelas[i])
       } 
       console.log("isValid :",isValid);
-      checkError(isValid)
+      console.log("kelasId :",kelasId);
+      await checkError()
+      if(isValid.includes(false) == false) {
+        return res.status(200).json({message:"Upload Success!", error: false})
+      }
     }
     check()
   },
