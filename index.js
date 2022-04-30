@@ -19,15 +19,9 @@ app.use(upload({
 })); // use express-fileupload for upload file
 
 // set up cors
-const whiteList = [ 'https://www.google.com/', 'http://localhost:3000/' ];
+// const whiteList = [ 'https://www.google.com/', 'http://localhost:3000/' ];
 const corsOptions = {
-    origin: (origin, callback) => {
-        if (whiteList.indexOf(origin) !== -1) {
-            callback(null, true)
-        } else {
-            callback(new Error('Not allowed by CORS'))
-        }
-    },
+    origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
     credentials: true
 };
