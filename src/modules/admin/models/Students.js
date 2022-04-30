@@ -1,6 +1,4 @@
-var fs = require("fs");
 let importExcel = require("convert-excel-to-json");
-const { resolve } = require("path");
 
 module.exports = {
   // get all students

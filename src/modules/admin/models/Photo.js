@@ -1,8 +1,168 @@
-var fs = require("fs");
 let importExcel = require("convert-excel-to-json");
-const { resolve } = require("path");
 
 module.exports = {
+  // get all photo class
+  getAll: (con, callback) => {
+    con.query("SELECT * FROM gambar", (callback));
+  },
+
+  // get photo class by kelas id
+  getBykelasId: (con, kelas_id, callback) => {
+    con.query(`SELECT * FROM gambar WHERE kelas_id = ${kelas_id}`, (callback))
+  },
+
+  // get photo class by id
+  getById: (con, id, callback) => {
+    con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, (callback))
+  },
+
+  // create photo class
+  create: (con, data, image, res, callback) => {
+    // check if photo class is over then 9 or not
+    con.query(`SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id}`, (err, result) => {
+      if (err) {
+        res.status(500).json({
+          message: "Failed to get photo class",
+          error: err
+        });
+      } else {
+        if (result.length > 9) {
+          res.status(500).json({
+            message: "Photo for this class is already more than 9 photos",
+            error: true
+          });
+        } else {
+          // check if photo class over then 3 where is same kelas id and same type
+          con.query(`SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id} AND gambar_jenis = '${data.jenis}'`, (err, result) => {
+            if (err) {
+              res.status(500).json({
+                message: "Failed to get photo class",
+                error: err
+              });
+            } else {
+              if (result.length > 3) {
+                res.status(500).json({
+                  message: "Photo for this class for type 'wajib' is already more than 3 photos",
+                  error: true
+                });
+              } else {
+                // check if image is empty or not
+                if (!image) {
+                  res.status(500).json({
+                    message: "Image cannot be empty",
+                    error: true,
+                  });
+                } else {
+                  // check extension of image
+                  const extension = image["image"].mimetype.split("/")[1];
+                  const allowedExtension = ["jpg", "jpeg", "png"];
+                  if (!allowedExtension.includes(extension)) {
+                    res.status(500).json({
+                      message: "Extension of image is not allowed",
+                      error: true,
+                    });
+                  } else {
+                    // move image to public/images/ with name image using file.mv()
+                    let file = image["image"];
+                    let filename = file.name;
+                    file.mv(`public/images/` + filename, (err) => {
+                      if (err) {
+                        res.status(500).json({
+                          message: "Failed to move image",
+                          error: err
+                        });
+                      } else {
+                        // insert data to database with image name using set
+                        con.query(`INSERT INTO gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id}`, (callback));
+                      }
+                    });
+                  }
+                }
+              }
+            }
+          })
+        }
+      }
+    })
+  },
+
+  // update photo class by id
+  update: (con, data, image, id, res, callback) => {
+    // check if id is in database or not
+    con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, (err, result) => {
+      if (err) {
+        res.status(500).json({
+          message: "Failed to get photo class",
+          error: err
+        });
+      } else {
+        if (result.length === 0) {
+          res.status(500).json({
+            message: "Photo class is not found",
+            error: true
+          });
+        } else {
+          // check if image is empty or not
+          if (!image) {
+            res.status(500).json({
+              message: "Image cannot be empty",
+              error: true,
+            });
+          } else {
+            // check extension of image
+            const extension = image["image"].mimetype.split("/")[1];
+            const allowedExtension = ["jpg", "jpeg", "png"];
+            if (!allowedExtension.includes(extension)) {
+              res.status(500).json({
+                message: "Extension of image is not allowed",
+                error: true,
+              });
+            } else {
+              // move image to public/images/ with name image using file.mv()
+              let file = image["image"];
+              let filename = file.name;
+              file.mv(`public/images/` + filename, (err) => {
+                if (err) {
+                  res.status(500).json({
+                    message: "Failed to move image",
+                    error: err
+                  });
+                } else {
+                  // update data to database with image name using set
+                  con.query(`UPDATE gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id} WHERE gambar_id = ${id}`, (callback));
+                }
+              });
+            }
+          }
+        }
+      }
+    })
+  },
+
+  // delete photo class by id
+  delete: (con, id, res, callback) => {
+    // check if id is in database or not
+    con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, (err, result) => {
+      if (err) {
+        res.status(500).json({
+          message: "Failed to get photo class",
+          error: err
+        });
+      } else {
+        if (result.length === 0) {
+          res.status(500).json({
+            message: "Photo class is not found",
+            error: true
+          });
+        } else {
+          // delete data from database
+          con.query(`DELETE FROM gambar WHERE gambar_id = ${id}`, (callback));
+        }
+      }
+    })
+  },
+
+  // validation for upload photo class
   uploadValidation: (con, res, data, callback) => {
     con.beginTransaction((err) => {
       if (err)
@@ -103,6 +263,7 @@ module.exports = {
     });
   },
 
+  // upload photo class
   upload: (con, res, filename, kelas) => {
     let result = importExcel({
       sourceFile: "./public/excel/group/" + filename,
