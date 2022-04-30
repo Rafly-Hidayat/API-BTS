@@ -1,5 +1,6 @@
 var fs = require("fs");
 let importExcel = require("convert-excel-to-json");
+const { resolve } = require("path");
 
 module.exports = {
   // get all students
@@ -206,25 +207,27 @@ module.exports = {
               console.log(result.Sheet1[i].jurusan);
               console.log(major);
               // CEK JURUSAN (MAJOR)
-              if (major.includes(result.Sheet1[i].jurusan) == true) {
+              if (
+                major.includes(result.Sheet1[i].jurusan.toUpperCase()) == true
+              ) {
                 console.log("SUCCESS VALIDATING MAJOR");
 
-                if (result.Sheet1[i].jurusan == "RPL") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "RPL") {
                   jurusan.push("Rekayasa Perangkat Lunak");
                 }
-                if (result.Sheet1[i].jurusan == "AK") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "AK") {
                   jurusan.push("Akuntansi");
                 }
-                if (result.Sheet1[i].jurusan == "TKJ") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "TKJ") {
                   jurusan.push("Teknik Komputer dan Jaringan");
                 }
-                if (result.Sheet1[i].jurusan == "TEI") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "TEI") {
                   jurusan.push("Teknik Elektronika Industri");
                 }
-                if (result.Sheet1[i].jurusan == "TBSM") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "TBSM") {
                   jurusan.push("Teknik dan Bisnis Sepeda Motor");
                 }
-                if (result.Sheet1[i].jurusan == "TET") {
+                if (result.Sheet1[i].jurusan.toUpperCase() == "TET") {
                   jurusan.push("Teknik Energi Terbarukan");
                 }
                 console.log(jurusan);
@@ -261,7 +264,7 @@ module.exports = {
             } else {
               // ABORT
               con.rollback();
-              return res.status(500).json({
+              return res.status(400).json({
                 message: "NIS Already Exist",
                 error: true,
               });
@@ -283,74 +286,114 @@ module.exports = {
     });
   },
 
-  upload: (con, res, filename, jurusan, d_kelas, kelas) => {
-    con.beginTransaction((err) => {
-      if (err)
-        return res.status(500).json({ message: "Upload error", error: err });
-      let error = 0;
-      let result = importExcel({
-        sourceFile: "./public/excel/single/" + filename,
-        header: { rows: 1 },
-        columnToKey: {
-          A: "nis",
-          B: "nama",
-          C: "gambar",
-          D: "quote",
-          E: "jurusan",
-          F: "d_kelas",
-        },
-        sheets: ["Sheet1"],
-      });
+  quoteValidation: (con, res, filename, callback) => {
+    let isValid = [];
+    function quoteValidation(x) {
+      if (x > 100) {
+        isValid.push(false);
+      } else {
+        isValid.push(true);
+      }
+    }
+    let result = importExcel({
+      sourceFile: "./public/excel/single/" + filename,
+      header: { rows: 1 },
+      columnToKey: {
+        A: "nis",
+        B: "nama",
+        C: "gambar",
+        D: "quote",
+        E: "jurusan",
+        F: "d_kelas",
+      },
+      sheets: ["Sheet1"],
+    });
 
-      for (let i = 0; i < result.Sheet1.length; i++) {
-        //   Check quote's length
-        let quote = result.Sheet1[i].quote;
-        console.log(quote.length);
-        if (quote.length <= 100) {
-          console.log("quotes allowed");
-          // get kelas_id
+    for (let i = 0; i < result.Sheet1.length; i++) {
+      quoteValidation(result.Sheet1[i].quote.length);
+      console.log(result.Sheet1[i].quote.length);
+    }
+    // console.log(isValid);
+    if (isValid.includes(false) == true) {
+      con.rollback();
+      return res.status(500).json({
+        message: "Quote Not Valid",
+        error: true,
+      });
+    } else {
+      return callback();
+    }
+  },
+
+  upload: (con, res, filename, jurusan, d_kelas, kelas) => {
+    let result = importExcel({
+      sourceFile: "./public/excel/single/" + filename,
+      header: { rows: 1 },
+      columnToKey: {
+        A: "nis",
+        B: "nama",
+        C: "gambar",
+        D: "quote",
+        E: "jurusan",
+        F: "d_kelas",
+      },
+      sheets: ["Sheet1"],
+    });
+
+    let isValid = [];
+    let kelasId = [];
+    function isError(kelas) {
+      return new Promise((resolve) => {
+        console.log(kelas);
+        con.query(
+          `SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas}'`,
+          (err, rows) => {
+            if (err) throw err;
+            if (rows.length > 0) {
+              kelasId.push(rows[0].kelas_id);
+              isValid.push(true);
+            } else {
+              isValid.push(false);
+            }
+            resolve(isValid, kelasId);
+          }
+        );
+      });
+    }
+
+    function checkError() {
+      if (isValid.includes(false) == true) {
+        con.rollback();
+        return res.status(500).json({
+          message: "kelas not found",
+          error: true,
+        });
+      } else {
+        console.log("insert to database");
+        for (let i = 0; i < result.Sheet1.length; i++) {
           con.query(
-            `SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas[i]}'`,
-            (err, rows) => {
+            `INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId[i]}`,
+            (err) => {
               if (err) throw err;
-              if (rows.length > 0) {
-                let kelasId = rows[0].kelas_id;
-                // insert into database
-                con.query(
-                  `INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId}`,
-                  (err, rows) => {
-                    if (err) throw err;
-                  }
-                );
-              } else {
-                con.rollback();
-                error = 2;
-              }
             }
           );
-        } else {
-          //   ABORT
-          con.rollback();
-          error = 1;
         }
       }
+    }
 
-      con.commit((err) => {
-        if (err) con.rollback();
-        if (error == 0) {
-          return res.status(200).json({ message: "Uploaded !", error: false });
-        } else if (error == 1) {
-          return res.status(500).json({
-            message: "Quote's length exceed the maximum value.",
-            error: true,
-          });
-        } else if ((error = 2)) {
-          return res.status(404).json({
-            message: "Kelas not found",
-            error: true,
-          });
-        }
-      });
-    });
+    async function check() {
+      for (let i = 0; i < result.Sheet1.length; i++) {
+        await isError(kelas[i]);
+      }
+      console.log("isValid :", isValid);
+      console.log("kelasId :", kelasId);
+      await checkError();
+      if (isValid.includes(false) == false) {
+        return res
+          .status(200)
+          .json({ message: "Upload Success!", error: false });
+      }
+    }
+    check();
   },
 };

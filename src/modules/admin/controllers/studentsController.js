@@ -120,7 +120,10 @@ module.exports = {
     upload: (req, res) => {
         Students.uploadValidation(req.con, res, req.files.filename, (filename,jurusan, d_kelas, kelas) => {
             console.log("Students upload validation success!", jurusan, d_kelas)
-            Students.upload(req.con, res, filename, jurusan, d_kelas, kelas)
+            Students.quoteValidation(req.con, res, filename, () =>{
+                console.log("Quotes validation success!")
+                Students.upload(req.con, res, filename, jurusan, d_kelas, kelas)
+            })
         })
     }
 

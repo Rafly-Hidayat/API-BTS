@@ -1,5 +1,6 @@
 var fs = require("fs");
 let importExcel = require("convert-excel-to-json");
+const { resolve } = require("path");
 
 module.exports = {
   uploadValidation: (con, res, data, callback) => {
@@ -20,6 +21,7 @@ module.exports = {
             message: "ERROR WHILE MOVING FILE TO ./public",
             error: true,
           });
+
         let result = importExcel({
           sourceFile: "./public/excel/group/" + filename,
           header: { rows: 1 },
@@ -38,25 +40,25 @@ module.exports = {
         for (let i = 0; i < result.Sheet1.length; i++) {
           //  check major
           let major = ["AK", "RPL", "TKJ", "TEI", "TBSM", "TET"];
-          if (major.includes(result.Sheet1[i].jurusan) == true) {
+          if (major.includes(result.Sheet1[i].jurusan.toUpperCase()) == true) {
             console.log("SUCCESS VALIDATING MAJOR");
 
-            if (result.Sheet1[i].jurusan == "RPL") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "RPL") {
               jurusan.push("Rekayasa Perangkat Lunak");
             }
-            if (result.Sheet1[i].jurusan == "AK") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "AK") {
               jurusan.push("Akuntansi");
             }
-            if (result.Sheet1[i].jurusan == "TKJ") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "TKJ") {
               jurusan.push("Teknik Komputer dan Jaringan");
             }
-            if (result.Sheet1[i].jurusan == "TEI") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "TEI") {
               jurusan.push("Teknik Elektronika Industri");
             }
-            if (result.Sheet1[i].jurusan == "TBSM") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "TBSM") {
               jurusan.push("Teknik dan Bisnis Sepeda Motor");
             }
-            if (result.Sheet1[i].jurusan == "TET") {
+            if (result.Sheet1[i].jurusan.toUpperCase() == "TET") {
               jurusan.push("Teknik Energi Terbarukan");
             }
             //  Check d_kelas
@@ -102,50 +104,99 @@ module.exports = {
   },
 
   upload: (con, res, filename, kelas) => {
-    con.beginTransaction((err) => {
-      if (err) return res.status(500).json({ message: "error", error: err });
-      //   let error = 0;
-      let result = importExcel({
-        sourceFile: "./public/excel/group/" + filename,
-        header: { rows: 1 },
-        columnToKey: {
-          A: "gambar",
-          B: "jenis",
-          C: "jurusan",
-          D: "d_kelas",
-        },
-        sheets: ["Sheet1"],
-      });
+    let result = importExcel({
+      sourceFile: "./public/excel/group/" + filename,
+      header: { rows: 1 },
+      columnToKey: {
+        A: "gambar",
+        B: "jenis",
+        C: "jurusan",
+        D: "d_kelas",
+      },
+      sheets: ["Sheet1"],
+    });
 
-      //   get kelas_id
+    let isValid = [];
+    let kelasId = [];
+
+    function isError(kelas) {
+      return new Promise((resolve) => {
+        console.log(kelas);
+        con.query(
+          `SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas}'`,
+          (err, rows) => {
+            if (err) throw err;
+            if (rows.length > 0) {
+              kelasId.push(rows[0].kelas_id);
+              isValid.push(true);
+            } else {
+              isValid.push(false);
+            }
+            resolve(isValid, kelasId);
+          }
+        );
+      });
+    }
+
+    function checkMaxData() {
+      return new Promise((resolve) => {
+        for (let i = 0; i < result.Sheet1.length; i++) {
+          con.query(
+            `SELECT * FROM gambar WHERE kelas_id = ${kelasId[i]}`,
+            (err, rows) => {
+              if (err) throw err;
+              console.log(rows.length);
+              if (rows.length < 9) {
+                resolve(true)
+              } else {
+                resolve(false)
+              }
+            }
+          );
+        }
+      })
+    }
+
+    function insertDb() {
       for (let i = 0; i < result.Sheet1.length; i++) {
         con.query(
-          `SELECT kelas_id FROM kelas WHERE kelas_nama = '${kelas[i]}'`,
-          (err, rows) => {
-            if (err)
-              return res.status(500).json({ message: "EROR", error: err });
-
-            if (rows.length > 0) {
-              let kelasId = rows[0].kelas_id;
-              // insert into database
-              con.query(
-                `INSERT INTO gambar SET gambar_nama = '${result.Sheet1[i].gambar}', gambar_jenis = '${result.Sheet1[i].jenis}', kelas_id = ${kelasId}`,
-                (err, rows) => {
-                  if (err) throw err;
-                }
-              );
-            } else {
-              con.rollback();
-              return res.status(500).json({message:"kelas_id not found", error:true})
-            }
+          `INSERT INTO gambar SET gambar_nama = '${result.Sheet1[i].gambar}', gambar_jenis = '${result.Sheet1[i].jenis}', kelas_id = ${kelasId[i]}`,
+          (err) => {
+            if (err) throw err;
           }
         );
       }
+    }
 
-      con.commit((err) => {
-        if (err) return res.status(500).json({ message: "error", error: true });
-        return res.status(200).json({message:"Upload Photos SUCCESS", error:false})
-      });
-    });
+    // Async function
+    async function check() {
+      for (let i = 0; i < result.Sheet1.length; i++) {
+        await isError(kelas[i]);
+      }
+      console.log("isValid :", isValid);
+      console.log("kelasId :", kelasId);
+      if (isValid.includes(false) == false) {
+        checkMaxData().then(
+          (resolve) => {
+            console.log(resolve)
+            if (resolve == true) {
+              insertDb();
+              return res
+              .status(200)
+              .json({ message: "Upload Success!", error: false });
+            } else {
+              return res.status(500).json({ message: "Max Data", error:true });
+            }
+          }
+        )
+      } else {
+        con.rollback();
+        return res.status(500).json({
+          message: "kelas not found",
+          error: true,
+        });
+      }
+    }
+    check();
   },
 };

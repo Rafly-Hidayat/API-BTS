@@ -20,6 +20,7 @@ app.use(upload({
 
 // set up cors
 // const whiteList = [ 'https://www.google.com/', 'http://localhost:3000/' ];
+
 const corsOptions = {
     origin: '*',
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
@@ -27,6 +28,8 @@ const corsOptions = {
 };
 app.use(cors(corsOptions));
 
+// for testing only
+app.use(cors())
 // connecting route to database
 app.use(function (req, res, next) {
     req.con = con;
