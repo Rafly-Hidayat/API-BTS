@@ -9,5 +9,5 @@ router.get("/guru/:guru_id", teachersController.getById); // get teacher by id
 router.post("/guru/tambah", teachersValidator.create, teachersController.create); // create teacher
 router.put("/guru/ubah/:guru_id", teachersValidator.create, teachersController.update); // update teacher
 router.delete("/guru/hapus/:guru_id", teachersController.delete); // delete teacher
-
+router.post("/guru/upload", teachersController.upload); // upload teacher
 module.exports = router;
