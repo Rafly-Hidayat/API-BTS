@@ -91,6 +91,15 @@ module.exports = {
                 });
             }
         });
+    },
+
+    upload: (req,res) => {
+        Teachers.upload(req.con, req.files.filename, res, () => {
+            res.status(200).json({
+                message: 'Success upload teacher',
+                error: false
+            });
+        });
     }
 
 }
