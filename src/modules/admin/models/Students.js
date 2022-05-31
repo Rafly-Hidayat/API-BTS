@@ -370,7 +370,7 @@ module.exports = {
         console.log("insert to database");
         for (let i = 0; i < result.Sheet1.length; i++) {
           con.query(
-            `INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = '${result.Sheet1[i].nama}', siswa_gambar = '${result.Sheet1[i].gambar}', siswa_quote = '${result.Sheet1[i].quote}', kelas_id = ${kelasId[i]}`,
+            `INSERT INTO siswa SET siswa_nis = ${result.Sheet1[i].nis}, siswa_nama = "${result.Sheet1[i].nama}", siswa_gambar = "${result.Sheet1[i].gambar}", siswa_quote = "${result.Sheet1[i].quote}", kelas_id = ${kelasId[i]}`,
             (err) => {
               if (err) throw err;
             }
