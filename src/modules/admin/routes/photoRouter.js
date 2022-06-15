@@ -6,6 +6,9 @@ const photoController = require('../controllers/photoController')
 router.get('/gambar/kelas', photoController.getAll) // get all photo class
 router.get("/kelas/gambar/:kelas_id", photoController.getBykelasId); // get photo class by kelas id
 router.get("/gambar/kelas/:gambar_id", photoController.getById); // get photo class by id
+
+router.get("/gambar/jurusan/:jurusan_id", photoController.getJurusanPhoto) // get photo jurusan by jurusan id
+
 router.post("/gambar/kelas/tambah", photoController.create); // create photo class
 router.post('/gambar/kelas/upload', photoController.upload) // upload photo class
 router.put('/gambar/kelas/ubah/:gambar_id', photoController.update) // update photo class by id
