@@ -21,7 +21,7 @@ module.exports = {
     // check if data is already exist in database
     con.query(
       `SELECT * FROM siswa WHERE siswa_nis = '${data.nis}'`,
-      (err, result) => {
+      (err, result) => { 
         if (err) {
           res.status(500).json({
             message: "Failed to create student",

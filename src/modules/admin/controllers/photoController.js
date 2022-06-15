@@ -36,6 +36,29 @@ module.exports = {
         })
     },
 
+    getJurusanPhoto: (req, res) => {
+        Photo.getJurusanPhoto(req.con, req.params.jurusan_id, (err, result) => {
+            if(err) {
+                res.status(500).json({
+                    message: 'Failed to get image by jurusan_id',
+                    error: err
+                });
+            } else if(result.length < 1) {
+                res.status(404).json({
+                    message: 'Empty Result',
+                    error: true
+                });
+            } else {
+                res.status(200).json({
+                    message: 'Success to get image by jurusan_id',
+                    jurusan: result[0].jurusan_nama,
+                    error: false,
+                    data: result
+                });
+            }
+        })
+    },
+
     // get photo class by id
     getById: (req, res) => {
         Photo.getById(req.con, req.params.gambar_id, (err, result) => {
