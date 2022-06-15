@@ -66,6 +66,23 @@ module.exports = {
         });
     },
 
+    getTotal: (req, res) => {
+        Students.getTotal(req.con, (err, result) => {
+            if (err) {
+                res.status(500).json({
+                    message: 'Failed to get total students',
+                    error: err
+                });
+            } else {
+                res.status(200).json({
+                    message: 'Success to get total students',
+                    error: false,
+                    data: result
+                });
+            }
+        });
+    },
+
     // create students
     create: (req, res) => {
         Students.create(req.con, req.body, res, req.files, (err) => {

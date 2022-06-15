@@ -11,6 +11,18 @@ module.exports = {
     con.query(`SELECT * FROM gambar WHERE kelas_id = ${kelas_id}`, (callback))
   },
 
+  getJumlah: (con, callback) => {
+    con.query(`SELECT COUNT(*) AS jumlah FROM gambar`, (callback));
+  },
+
+  getJumlahWajib: (con, callback) => {
+    con.query(`SELECT COUNT(*) AS jumlah_wajib FROM gambar WHERE gambar_jenis = "wajib"`, (callback));
+  },
+  
+  getJumlahBebas: (con, callback) => {
+    con.query(`SELECT COUNT(*) AS jumlah_bebas FROM gambar WHERE gambar_jenis = "bebas"`, (callback));
+  },
+
   getJurusanPhoto: (con, jurusan_id, callback) => {
     con.query(`SELECT gambar_id, gambar_nama, gambar_jenis, gambar.kelas_id, jurusan_nama FROM gambar JOIN kelas ON gambar.kelas_id = kelas.kelas_id JOIN jurusan ON jurusan.jurusan_id = kelas.jurusan_id WHERE kelas.jurusan_id = ${jurusan_id}`, (callback))
   },
