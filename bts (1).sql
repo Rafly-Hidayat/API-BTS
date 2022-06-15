@@ -2,10 +2,10 @@
 -- version 5.1.1
 -- https://www.phpmyadmin.net/
 --
--- Host: localhost
--- Generation Time: May 31, 2022 at 04:26 AM
--- Server version: 10.4.21-MariaDB
--- PHP Version: 8.0.15
+-- Host: 127.0.0.1
+-- Generation Time: Jun 15, 2022 at 03:35 AM
+-- Server version: 10.4.22-MariaDB
+-- PHP Version: 8.1.2
 
 SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
 START TRANSACTION;
@@ -119,20 +119,22 @@ INSERT INTO `guru` (`guru_id`, `guru_nama`, `guru_gambar`, `guru_jabatan`) VALUE
 
 CREATE TABLE `jurusan` (
   `jurusan_id` int(4) NOT NULL,
-  `jurusan_nama` varchar(100) NOT NULL
+  `jurusan_nama` varchar(100) NOT NULL,
+  `jurusan_logo` varchar(255) DEFAULT NULL,
+  `jurusan_deskripsi` varchar(255) DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
 -- Dumping data for table `jurusan`
 --
 
-INSERT INTO `jurusan` (`jurusan_id`, `jurusan_nama`) VALUES
-(1, 'AK'),
-(2, 'RPL'),
-(3, 'TKJ'),
-(4, 'TEI'),
-(5, 'TBSM'),
-(6, 'TET');
+INSERT INTO `jurusan` (`jurusan_id`, `jurusan_nama`, `jurusan_logo`, `jurusan_deskripsi`) VALUES
+(1, 'AK', NULL, NULL),
+(2, 'RPL', NULL, NULL),
+(3, 'TKJ', NULL, NULL),
+(4, 'TEI', NULL, NULL),
+(5, 'TBSM', NULL, NULL),
+(6, 'TET', NULL, NULL);
 
 -- --------------------------------------------------------
 
