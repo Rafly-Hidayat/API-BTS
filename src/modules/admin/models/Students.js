@@ -16,6 +16,10 @@ module.exports = {
     con.query(`SELECT * FROM siswa WHERE kelas_id = ${id}`, callback);
   },
 
+  getTotal: (con, callback) => {
+    con.query(`SELECT COUNT(*) AS total FROM siswa`, callback);
+  },
+
   // create students
   create: (con, data, res, image, callback) => {
     // check if data is already exist in database
