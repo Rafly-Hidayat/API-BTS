@@ -96,6 +96,56 @@ module.exports = {
     });
   },
 
+  totalClassPhoto: (req, res) => {
+    Photo.getJumlahWajibKelas(req.con, req.params.kelas_id, (err, wajib) => {
+      if (err) {
+        res.status(500).json({
+          message: "Failed to get image by id",
+          error: err,
+        });
+      } else {
+        Photo.getJumlahBebasKelas(
+          req.con,
+          req.params.kelas_id,
+          (err, bebas) => {
+            if (err) {
+              res.status(500).json({
+                message: "Failed to get image by id",
+                error: err,
+              });
+            } else {
+              Photo.totalClassPhoto(
+                req.con,
+                req.params.kelas_id,
+                (err, result) => {
+                  if (err) {
+                    res.status(500).json({
+                      message: "Failed to get image by id",
+                      error: err,
+                    });
+                  } else if (result.length < 1) {
+                    res.status(404).json({
+                      message: "data not found",
+                      error: err,
+                    });
+                  } else {
+                    res.status(200).json({
+                      message: "success",
+                      error: false,
+                      wajib: wajib[0].jumlah_wajib_kelas,
+                      bebas: bebas[0].jumlah_bebas_kelas,
+                      total: result[0].jumlah_gambar_kelas,
+                    });
+                  }
+                }
+              );
+            }
+          }
+        );
+      }
+    });
+  },
+
   // get photo class by id
   getById: (req, res) => {
     Photo.getById(req.con, req.params.gambar_id, (err, result) => {

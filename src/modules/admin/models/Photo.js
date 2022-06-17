@@ -3,103 +3,138 @@ let importExcel = require("convert-excel-to-json");
 module.exports = {
   // get all photo class
   getAll: (con, callback) => {
-    con.query("SELECT * FROM gambar", (callback));
+    con.query("SELECT * FROM gambar", callback);
   },
 
   // get photo class by kelas id
   getBykelasId: (con, kelas_id, callback) => {
-    con.query(`SELECT * FROM gambar WHERE kelas_id = ${kelas_id}`, (callback))
+    con.query(`SELECT * FROM gambar WHERE kelas_id = ${kelas_id}`, callback);
   },
 
   getJumlah: (con, callback) => {
-    con.query(`SELECT COUNT(*) AS jumlah FROM gambar`, (callback));
+    con.query(`SELECT COUNT(*) AS jumlah FROM gambar`, callback);
+  },
+  totalClassPhoto: (con, id, callback) => {
+    con.query(`SELECT COUNT(*) AS jumlah_gambar_kelas FROM gambar WHERE kelas_id = ${id}`, callback);
+  },
+
+  getJumlahWajibKelas: (con, id, callback) => {
+    con.query(
+      `SELECT COUNT(*) AS jumlah_wajib_kelas FROM gambar WHERE gambar_jenis = "wajib" AND kelas_id = ${id}`,
+      callback
+    );
+  },
+  getJumlahBebasKelas: (con, id, callback) => {
+    con.query(
+      `SELECT COUNT(*) AS jumlah_bebas_kelas FROM gambar WHERE gambar_jenis = "bebas" AND kelas_id = ${id}`,
+      callback
+    );
   },
 
   getJumlahWajib: (con, callback) => {
-    con.query(`SELECT COUNT(*) AS jumlah_wajib FROM gambar WHERE gambar_jenis = "wajib"`, (callback));
+    con.query(
+      `SELECT COUNT(*) AS jumlah_wajib FROM gambar WHERE gambar_jenis = "wajib"`,
+      callback
+    );
   },
-  
+
   getJumlahBebas: (con, callback) => {
-    con.query(`SELECT COUNT(*) AS jumlah_bebas FROM gambar WHERE gambar_jenis = "bebas"`, (callback));
+    con.query(
+      `SELECT COUNT(*) AS jumlah_bebas FROM gambar WHERE gambar_jenis = "bebas"`,
+      callback
+    );
   },
 
   getJurusanPhoto: (con, jurusan_id, callback) => {
-    con.query(`SELECT gambar_id, gambar_nama, gambar_jenis, gambar.kelas_id, jurusan_nama FROM gambar JOIN kelas ON gambar.kelas_id = kelas.kelas_id JOIN jurusan ON jurusan.jurusan_id = kelas.jurusan_id WHERE kelas.jurusan_id = ${jurusan_id}`, (callback))
+    con.query(
+      `SELECT gambar_id, gambar_nama, gambar_jenis, gambar.kelas_id, jurusan_nama FROM gambar JOIN kelas ON gambar.kelas_id = kelas.kelas_id JOIN jurusan ON jurusan.jurusan_id = kelas.jurusan_id WHERE kelas.jurusan_id = ${jurusan_id}`,
+      callback
+    );
   },
 
   // get photo class by id
   getById: (con, id, callback) => {
-    con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, (callback))
+    con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, callback);
   },
 
   // create photo class
   create: (con, data, image, res, callback) => {
     // check if photo class is over then 9 or not
-    con.query(`SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id}`, (err, result) => {
-      if (err) {
-        res.status(500).json({
-          message: "Failed to get photo class",
-          error: err
-        });
-      } else {
-        if (result.length > 9) {
+    con.query(
+      `SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id}`,
+      (err, result) => {
+        if (err) {
           res.status(500).json({
-            message: "Photo for this class is already more than 9 photos",
-            error: true
+            message: "Failed to get photo class",
+            error: err,
           });
         } else {
-          // check if photo class over then 3 where is same kelas id and same type
-          con.query(`SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id} AND gambar_jenis = '${data.jenis}'`, (err, result) => {
-            if (err) {
-              res.status(500).json({
-                message: "Failed to get photo class",
-                error: err
-              });
-            } else {
-              if (result.length > 3) {
-                res.status(500).json({
-                  message: "Photo for this class for type 'wajib' is already more than 3 photos",
-                  error: true
-                });
-              } else {
-                // check if image is empty or not
-                if (!image) {
+          if (result.length > 9) {
+            res.status(500).json({
+              message: "Photo for this class is already more than 9 photos",
+              error: true,
+            });
+          } else {
+            // check if photo class over then 3 where is same kelas id and same type
+            con.query(
+              `SELECT * FROM gambar WHERE kelas_id = ${data.kelas_id} AND gambar_jenis = '${data.jenis}'`,
+              (err, result) => {
+                if (err) {
                   res.status(500).json({
-                    message: "Image cannot be empty",
-                    error: true,
+                    message: "Failed to get photo class",
+                    error: err,
                   });
                 } else {
-                  // check extension of image
-                  const extension = image["image"].mimetype.split("/")[1];
-                  const allowedExtension = ["jpg", "jpeg", "png"];
-                  if (!allowedExtension.includes(extension)) {
+                  if (result.length > 3) {
                     res.status(500).json({
-                      message: "Extension of image is not allowed",
+                      message:
+                        "Photo for this class for type 'wajib' is already more than 3 photos",
                       error: true,
                     });
                   } else {
-                    // move image to public/images/ with name image using file.mv()
-                    let file = image["image"];
-                    let filename = file.name;
-                    file.mv(`public/images/` + filename, (err) => {
-                      if (err) {
+                    // check if image is empty or not
+                    if (!image) {
+                      res.status(500).json({
+                        message: "Image cannot be empty",
+                        error: true,
+                      });
+                    } else {
+                      // check extension of image
+                      const extension = image["image"].mimetype.split("/")[1];
+                      const allowedExtension = ["jpg", "jpeg", "png"];
+                      if (!allowedExtension.includes(extension)) {
                         res.status(500).json({
-                          message: "Failed to move image",
-                          error: err
+                          message: "Extension of image is not allowed",
+                          error: true,
                         });
                       } else {
-                        // insert data to database with image name using set
-                        con.query(`INSERT INTO gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id}`, (callback));
+                        // move image to public/images/ with name image using file.mv()
+                        let file = image["image"];
+                        let filename = file.name;
+                        file.mv(`public/images/` + filename, (err) => {
+                          if (err) {
+                            res.status(500).json({
+                              message: "Failed to move image",
+                              error: err,
+                            });
+                          } else {
+                            // insert data to database with image name using set
+                            con.query(
+                              `INSERT INTO gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id}`,
+                              callback
+                            );
+                          }
+                        });
                       }
-                    });
+                    }
                   }
                 }
               }
-            }
-          })
+            );
+          }
         }
       }
-    })
+    );
   },
 
   // update photo class by id
@@ -109,13 +144,13 @@ module.exports = {
       if (err) {
         res.status(500).json({
           message: "Failed to get photo class",
-          error: err
+          error: err,
         });
       } else {
         if (result.length === 0) {
           res.status(500).json({
             message: "Photo class is not found",
-            error: true
+            error: true,
           });
         } else {
           // check if image is empty or not
@@ -141,18 +176,21 @@ module.exports = {
                 if (err) {
                   res.status(500).json({
                     message: "Failed to move image",
-                    error: err
+                    error: err,
                   });
                 } else {
                   // update data to database with image name using set
-                  con.query(`UPDATE gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id} WHERE gambar_id = ${id}`, (callback));
+                  con.query(
+                    `UPDATE gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id} WHERE gambar_id = ${id}`,
+                    callback
+                  );
                 }
               });
             }
           }
         }
       }
-    })
+    });
   },
 
   // delete photo class by id
@@ -162,20 +200,20 @@ module.exports = {
       if (err) {
         res.status(500).json({
           message: "Failed to get photo class",
-          error: err
+          error: err,
         });
       } else {
         if (result.length === 0) {
           res.status(500).json({
             message: "Photo class is not found",
-            error: true
+            error: true,
           });
         } else {
           // delete data from database
-          con.query(`DELETE FROM gambar WHERE gambar_id = ${id}`, (callback));
+          con.query(`DELETE FROM gambar WHERE gambar_id = ${id}`, callback);
         }
       }
-    })
+    });
   },
 
   // validation for upload photo class
@@ -324,14 +362,14 @@ module.exports = {
               if (err) throw err;
               console.log(rows.length);
               if (rows.length < 9) {
-                resolve(true)
+                resolve(true);
               } else {
-                resolve(false)
+                resolve(false);
               }
             }
           );
         }
-      })
+      });
     }
 
     function insertDb() {
@@ -353,19 +391,17 @@ module.exports = {
       console.log("isValid :", isValid);
       console.log("kelasId :", kelasId);
       if (isValid.includes(false) == false) {
-        checkMaxData().then(
-          (resolve) => {
-            console.log(resolve)
-            if (resolve == true) {
-              insertDb();
-              return res
+        checkMaxData().then((resolve) => {
+          console.log(resolve);
+          if (resolve == true) {
+            insertDb();
+            return res
               .status(200)
               .json({ message: "Upload Success!", error: false });
-            } else {
-              return res.status(500).json({ message: "Max Data", error:true });
-            }
+          } else {
+            return res.status(500).json({ message: "Max Data", error: true });
           }
-        )
+        });
       } else {
         con.rollback();
         return res.status(500).json({
