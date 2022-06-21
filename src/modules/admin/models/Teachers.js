@@ -11,6 +11,10 @@ module.exports = {
     con.query(`SELECT * FROM guru WHERE guru_id = ${id}`, callback);
   },
 
+  getCount: (con, callback) => {
+    con.query(`SELECT COUNT(*) AS jumlah FROM guru`, callback);
+  },
+
   // create teacher
   create: (con, data, image, res, callback) => {
     // check if data is already exist in database
