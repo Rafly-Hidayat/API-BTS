@@ -11,4 +11,6 @@ router.put("/guru/ubah/:guru_id", teachersValidator.create, teachersController.u
 router.delete("/guru/hapus/:guru_id", teachersController.delete); // delete teacher
 router.post("/guru/upload", teachersController.upload); // upload teacher
 router.get("/jumlah/guru", teachersController.getCount); // get count teacher
+router.get("/kaprog", teachersController.getKaprog); // get Kaprog
+
 module.exports = router;

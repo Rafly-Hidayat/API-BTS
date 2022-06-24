@@ -42,6 +42,7 @@ module.exports = {
         });
     },
 
+    // get count teachers
     getCount: (req, res) => {
         Teachers.getCount(req.con, (err, result) => {
             if (err) {
@@ -57,6 +58,24 @@ module.exports = {
                 });
             }
         });
+    },
+
+    // get Kaprog
+    getKaprog: (req, res) => {
+        Teachers.getKaprog(req.con, (err, rows) => {
+            if (err) {
+                res.status(500).json({
+                    message: 'Failed to get count teachers',
+                    error: err
+                });
+            } else {
+                res.status(200).json({
+                    message: 'Success to get count teachers',
+                    error: false,
+                    data: rows
+                });
+            }
+        })
     },
 
     // create teacher

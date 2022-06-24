@@ -11,8 +11,14 @@ module.exports = {
     con.query(`SELECT * FROM guru WHERE guru_id = ${id}`, callback);
   },
 
+  // get count teachers
   getCount: (con, callback) => {
     con.query(`SELECT COUNT(*) AS jumlah FROM guru`, callback);
+  },
+
+  // get Kaprog
+  getKaprog: (con, callback) => {
+    con.query(`SELECT * FROM guru WHERE guru_jabatan LIKE '%Kepala Program%'`, callback)
   },
 
   // create teacher
