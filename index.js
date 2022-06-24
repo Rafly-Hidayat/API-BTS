@@ -47,6 +47,7 @@ const photoRouter = require("./src/modules/admin/routes/photoRouter") // Router 
 const studentsUserRouter = require("./src/modules/user/routes/studentsRouter"); // Router Students User
 const classUserRouter = require("./src/modules/user/routes/classRouter"); // Router Class User
 const majorsUserRouter = require("./src/modules/user/routes/majorRouter"); // Router Majors User
+const graduationRouter = require("./src/modules/user/routes/graduationRouter"); // Router Graduation
 
 // use admin router
 app.use(adminAuthRouter); // use router login admin
@@ -60,5 +61,6 @@ app.use(photoRouter); // use router Photos admin
 app.use("/user", studentsUserRouter); // use router students user
 app.use("/user", classUserRouter); // use router class user
 app.use("/user", majorsUserRouter); // use router majors user
+app.use("/user", graduationRouter); // use router graduation 
 
 app.listen(port, () => { console.log(`Server is running on port ${port}`) }); // listen port

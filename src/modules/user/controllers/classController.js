@@ -1,4 +1,3 @@
-const req = require('express/lib/request');
 const Class = require('../models/class');
 
 module.exports = {
