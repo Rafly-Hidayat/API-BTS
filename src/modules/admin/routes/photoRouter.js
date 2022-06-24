@@ -9,6 +9,7 @@ router.get("/gambar/kelas/:gambar_id", photoController.getById); // get photo cl
 
 router.get("/gambar/jurusan/:jurusan_id", photoController.getJurusanPhoto) // get photo jurusan by jurusan id
 router.get("/jumlah/gambar", photoController.getJumlah) // get jumlah photo
+router.get("/jumlah/gambar/:kelas_id", photoController.totalClassPhoto) // get jumlah photo
 router.post("/gambar/kelas/tambah", photoController.create); // create photo class
 router.post('/gambar/kelas/upload', photoController.upload) // upload photo class
 router.put('/gambar/kelas/ubah/:gambar_id', photoController.update) // update photo class by id
