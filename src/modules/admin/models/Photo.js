@@ -141,55 +141,45 @@ module.exports = {
   update: (con, data, image, id, res, callback) => {
     // check if id is in database or not
     con.query(`SELECT * FROM gambar WHERE gambar_id = ${id}`, (err, result) => {
-      if (err) {
-        res.status(500).json({
-          message: "Failed to get photo class",
-          error: err,
-        });
+      if (err) return res.status(500).json({
+        message: "Failed to get photo class",
+        error: err,
+      });
+
+      if (result.length === 0) return res.status(500).json({
+        message: "Photo class is not found",
+        error: true,
+      });
+
+      let filename = ""
+      // check if image is empty or not
+      if (!image) {
+        filename = result[0].siswa_gambar
       } else {
-        if (result.length === 0) {
-          res.status(500).json({
-            message: "Photo class is not found",
-            error: true,
+        // check extension of image
+        const extension = image["image"].mimetype.split("/")[1];
+        const allowedExtension = ["jpg", "jpeg", "png"];
+        if (!allowedExtension.includes(extension.toLowerCase())) return res.status(500).json({
+          message: "Extension of image is not allowed",
+          error: true,
+        });
+
+        // move image to public/images/ with name image using file.mv()
+        let file = image["image"];
+        filename = file.name;
+        file.mv(`public/images/` + filename, (err) => {
+          if (err) return res.status(500).json({
+            message: "Failed to move image",
+            error: err,
           });
-        } else {
-          // check if image is empty or not
-          if (!image) {
-            res.status(500).json({
-              message: "Image cannot be empty",
-              error: true,
-            });
-          } else {
-            // check extension of image
-            const extension = image["image"].mimetype.split("/")[1];
-            const allowedExtension = ["jpg", "jpeg", "png"];
-            if (!allowedExtension.includes(extension)) {
-              res.status(500).json({
-                message: "Extension of image is not allowed",
-                error: true,
-              });
-            } else {
-              // move image to public/images/ with name image using file.mv()
-              let file = image["image"];
-              let filename = file.name;
-              file.mv(`public/images/` + filename, (err) => {
-                if (err) {
-                  res.status(500).json({
-                    message: "Failed to move image",
-                    error: err,
-                  });
-                } else {
-                  // update data to database with image name using set
-                  con.query(
-                    `UPDATE gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id} WHERE gambar_id = ${id}`,
-                    callback
-                  );
-                }
-              });
-            }
-          }
-        }
+        });
       }
+
+      // update data to database with image name using set
+      con.query(
+        `UPDATE gambar SET gambar_nama = '${filename}', gambar_jenis = '${data.jenis}', kelas_id = ${data.kelas_id} WHERE gambar_id = ${id}`, callback
+      );
+      
     });
   },
 
